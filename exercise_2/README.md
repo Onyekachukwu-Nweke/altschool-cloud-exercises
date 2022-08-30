@@ -15,4 +15,4 @@ There are many more these ones are discussed in this repository
 ### Network Commands
 
 1. ``` ping [host] ```: This is a network command used to send Internet Control Message Protocol(ICMP) echo request to host for checking connection between two servers
-![ping](/images/ping.png)
+![ping](/exercise_2/images/ping.png)
