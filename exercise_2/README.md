@@ -14,5 +14,10 @@ There are many more these ones are discussed in this repository
 
 ### Network Commands
 
-1. ``` ping [host] ```: This is a network command used to send Internet Control Message Protocol(ICMP) echo request to host for checking connection between two servers
+1. ``` ping [host] ```:
+This is a network command used to send Internet Control Message Protocol(ICMP) echo request to host for checking connection between two servers
 ![ping](/exercise_2/images/ping.png)
+
+2. ``` wget [File_To_Be_Downloaded] ```:
+This command is also a network command used to download a file over the internet
+![wget](/exercise_2/images/wget.png)
