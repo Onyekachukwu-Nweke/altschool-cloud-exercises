@@ -11,7 +11,7 @@ Linux is a family of open-source Unix-like operating systems based on the Linux 
 * File Permission Commands
 * User Management Commands
 * Process Management Commands
-* Search Commands etc.
+* Search/Filter Commands etc.
 
 There are many more these ones are discussed in this repository
 
@@ -33,9 +33,30 @@ This command is also a network command used to download a file over the internet
 ![wget](/exercise_2/images/wget.png)
 <br />
 
+### File Permission Commands
+Every file permission command start with ``` chmod ``` which means change modification
+<br />
+
+3. ``` $ chmod u+x [FILE] ```: <br />
+This is a file permission command thats grant execute permission to a user
+<br />
+
+**_Usage:_**
+![u](/exercise_2/images/u.png)
+<br />
+
+4. ``` $ chmod g+x [FILE] ```: <br />
+This is a file permission command thats grant execute permission to a particular group the owner of the file is associated with.
+<br />
+
+**_Usage:_**
+![g](/exercise_2/images/g.png)
+<br />
+
+
 ### User Management Commands
 
-3. ``` $ Last ```: <br />
+5. ``` $ Last ```: <br />
 This is a user management command that displays the last users who logged into the system
 <br />
 
@@ -43,10 +64,30 @@ This is a user management command that displays the last users who logged into t
 ![last](/exercise_2/images/last.png)
 <br />
 
-4. ``` $ w ```: <br />
+6. ``` $ w ```: <br />
 This command shows who is logged in what they are doing
 <br />
 
 **_Usage:_**
 ![w](/exercise_2/images/w.png)
+<br />
+
+### Process Management Commands
+
+### Search/Filter Commands
+
+9. ``` $ grep [PATTERN] [FILE] ```: <br />
+ grep searches for PATTERNS in each FILE.  PATTERNS is one or more patterns separated by newline characters, and grep prints each line that matches a pattern. Typically PATTERNS should be quoted when grep is used in a shell command.
+ <br />
+
+**_Usage:_**
+![grep](/exercise_2/images/grep.png)
+<br />
+
+10. ``` $ locate [NAME] ```: <br />
+Find files and directories by NAME
+<br />
+
+**_Usage:_**
+![locate](/exercise_2/images/locate.png)
 <br />
