@@ -33,11 +33,16 @@ This command is also a network command used to download a file over the internet
 ![wget](/exercise_2/images/wget.png)
 <br />
 
+3. ``` $ netstat -nutlp ```: <br />
+Display listening tcp and udp ports and corresponding
+programs
+<br />
+
 ### File Permission Commands
 Every file permission command start with ``` chmod ``` which means change modification
 <br />
 
-3. ``` $ chmod u+x [FILE] ```: <br />
+4. ``` $ chmod u+x [FILE] ```: <br />
 This is a file permission command thats grant execute permission to a user
 <br />
 
@@ -45,7 +50,7 @@ This is a file permission command thats grant execute permission to a user
 ![u](/exercise_2/images/u.png)
 <br />
 
-4. ``` $ chmod g+x [FILE] ```: <br />
+5. ``` $ chmod g+x [FILE] ```: <br />
 This is a file permission command thats grant execute permission to a particular group the owner of the file is associated with.
 <br />
 
@@ -56,7 +61,7 @@ This is a file permission command thats grant execute permission to a particular
 
 ### User Management Commands
 
-5. ``` $ Last ```: <br />
+6. ``` $ Last ```: <br />
 This is a user management command that displays the last users who logged into the system
 <br />
 
@@ -64,7 +69,7 @@ This is a user management command that displays the last users who logged into t
 ![last](/exercise_2/images/last.png)
 <br />
 
-6. ``` $ w ```: <br />
+7. ``` $ w ```: <br />
 This command shows who is logged in what they are doing
 <br />
 
@@ -73,6 +78,15 @@ This command shows who is logged in what they are doing
 <br />
 
 ### Process Management Commands
+Most process management commands starts
+
+8. ``` ps -ef ```: <br />
+This is a process management command that displays all the currently running processes on the system
+<br />
+
+**_Usage:_**
+![ps](/exercise_2/images/ps.png)
+<br />
 
 ### Search/Filter Commands
 
