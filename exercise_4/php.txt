@@ -1,0 +1,4 @@
+PHP 7.4.30 (cli) (built: Aug  1 2022 15:06:20) ( NTS )
+Copyright (c) The PHP Group
+Zend Engine v3.4.0, Copyright (c) Zend Technologies
+    with Zend OPcache v7.4.30, Copyright (c), by Zend Technologies
