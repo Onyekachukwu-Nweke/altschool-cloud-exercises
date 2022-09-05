@@ -1,0 +1,2 @@
+origin  https://glpat-Wf64sCibsmDmYzt1gHxN@gitlab.com/Onyekachukwu-Nweke/altschool-cloud-exercises.git (fetch)
+origin  https://glpat-Wf64sCibsmDmYzt1gHxN@gitlab.com/Onyekachukwu-Nweke/altschool-cloud-exercises.git (push)
