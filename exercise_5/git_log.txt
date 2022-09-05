@@ -1,0 +1,77 @@
+commit 6bde013572f4aef3e91f7ed5df1a5a2dc00438bf
+Author: Onyekachukwu Ejiofor Nweke <nwekeejioforscheller@gmail.com>
+Date:   Mon Sep 5 01:06:08 2022 -0700
+
+    Pushed to Gitlab
+
+commit dd8cd39bf1c0dc8d7e9e75df6f1a6c156f3d0573
+Author: Onyekachukwu Ejiofor Nweke <nwekeejioforscheller@gmail.com>
+Date:   Sun Sep 4 10:55:49 2022 -0700
+
+    Submitted Exercise 4
+
+commit ee7ee452716a3944dbdaf8832f8cd52acd210d79
+Author: Onyekachukwu Ejiofor Nweke <nwekeejioforscheller@gmail.com>
+Date:   Sat Sep 3 15:48:34 2022 -0700
+
+    Finished Exercise 3
+
+commit 70308c8b1cf099426bc6b3db33b3816218cebb9d
+Author: Onyekachukwu Ejiofor Nweke <nwekeejioforscheller@gmail.com>
+Date:   Sat Sep 3 15:38:40 2022 -0700
+
+    Added SSH
+
+commit b813c68083b02f7460ff12ffe95de32598143c6f
+Author: Onyekachukwu Ejiofor Nweke <nwekeejioforscheller@gmail.com>
+Date:   Sat Sep 3 13:45:25 2022 -0700
+
+    Exercise 3
+
+commit cc3ce712ec1b079122eb2419c81b71f6884fe543
+Author: Onyekachukwu Ejiofor Nweke <nwekeejioforscheller@gmail.com>
+Date:   Tue Aug 30 00:59:03 2022 -0700
+
+    Added Search Commands
+
+commit 29f28b738acc135741be79ec26f364ef3b273833
+Author: Onyekachukwu Ejiofor Nweke <nwekeejioforscheller@gmail.com>
+Date:   Mon Aug 29 17:52:15 2022 -0700
+
+    Added User Mgt Cmds
+
+commit fb6caa993a1da62627eb910461a9379fc7139d52
+Author: Onyekachukwu Ejiofor Nweke <nwekeejioforscheller@gmail.com>
+Date:   Mon Aug 29 17:35:55 2022 -0700
+
+    Line break
+
+commit 82c6166f076eb1e73cefe4dd0cb8fbd7ec1b17ef
+Author: Onyekachukwu Ejiofor Nweke <nwekeejioforscheller@gmail.com>
+Date:   Mon Aug 29 17:29:09 2022 -0700
+
+    Wget Added
+
+commit 220c2958b18a49a439c1272baee43219dd5dea04
+Author: Onyekachukwu Ejiofor Nweke <nwekeejioforscheller@gmail.com>
+Date:   Mon Aug 29 17:18:26 2022 -0700
+
+    One
+
+commit 86d1491bf74b296c18255c3105e6d980769c36f1
+Author: Onyekachukwu Ejiofor Nweke <nwekeejioforscheller@gmail.com>
+Date:   Mon Aug 29 17:16:56 2022 -0700
+
+    Py
+
+commit ff3c301b30f57b4e5fc7abe09c9e47749e8cf965
+Author: Onyekachukwu Ejiofor Nweke <nwekeejioforscheller@gmail.com>
+Date:   Mon Aug 29 17:12:30 2022 -0700
+
+    Exercise 2
+
+commit eb5fb1ae5d2cbdb20b873a66b83aa5f1d59e950d
+Author: Onyekachukwu Ejiofor Nweke <nwekeejioforscheller@gmail.com>
+Date:   Thu Aug 25 03:41:43 2022 -0700
+
+    Added Exercise 1
