@@ -1,4 +1,4 @@
-![laravel-logo](mini_project/img/laravel-logo.svg)
+![laravel-logo](/mini_project/img/laravel-logo.svg)
 ### Procedure
 
 ###### Install LAMP Stack on Debian 11
@@ -77,7 +77,7 @@ apt install ./mysql-apt-config_0.8.22-1_all.deb
 ```
 
 Confirm addition of mySQL 8.0 repository as default when prompted
-![mysql-prompt-image](mini_project/img/mysql-prompt.jpg)
+![mysql-prompt-image](/mini_project/img/mysql-prompt.jpg)
 
 Select OK by pressing `Tab` and hit `Enter` (as shown in the image above)
 
