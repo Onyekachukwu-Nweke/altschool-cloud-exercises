@@ -1,0 +1,16 @@
+---
+- name: Update and upgrade server
+  hosts: all
+  become: yes
+  tasks:
+        - name: run bash script to update and upgrade server
+          script: startup_script.sh
+
+- name: install apache
+  hosts: all
+  become: yes
+  tasks:
+        - name: install apache2
+          apt:
+                name: apache2
+                state: present
