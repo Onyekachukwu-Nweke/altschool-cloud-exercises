@@ -5,7 +5,7 @@
 - Virtual machine running Debian 11
 - Git, Apache, Wget, Curl
 - Php 8.1 and it's dependencies
-- Mysql/MariaDb Database
+- Mysql
 - Composer
 
 ### Prerequisites to Install LAMP
