@@ -1,4 +1,4 @@
-![laravel-logo]()
+![laravel-logo](mini_project/img/laravel-logo.svg)
 ### Procedure
 
 ###### Install LAMP Stack on Debian 11
@@ -77,7 +77,7 @@ apt install ./mysql-apt-config_0.8.22-1_all.deb
 ```
 
 Confirm addition of mySQL 8.0 repository as default when prompted
-![mysql-prompt-image]()
+![mysql-prompt-image](mini_project/img/mysql-prompt.jpg)
 
 Select OK by pressing `Tab` and hit `Enter` (as shown in the image above)
 
@@ -274,7 +274,7 @@ nano /etc/hosts
 
 > Also edit you host machines `etc/hosts` file and flush your `DNS cache` afterwards. Check the internet on how to do this for your specific OS
 
-Sample below: **DON'T FORGET TO USE YOUR OWN IP PLEASE**
+This is a sample
 ```
 root@ubuntu:/# nano /etc/hosts
 127.0.0.1       localhost
@@ -288,8 +288,8 @@ ff02::2 ip6-allrouters
 
 
 ### Access Laravel
-Now, open your web browser and access the Laravel site by visiting your `virtual domain name` or `IP`. You will be redirected to the Laravel default page. If you get a `404 | not found` error, make sure to do the following...
-- move to your `routes` directory in your project directory which in my case is `/var/www/mini-project/laravel/routes`
+<!-- Now, open your web browser and access the Laravel site by visiting your `virtual domain name` or `IP`. You will be redirected to the Laravel default page. If you get a `404 | not found` error, make sure to do the following...
+- move to your `routes` directory in your project directory which in my case is `/var/www/mini-project/laravel/routes` -->
 ```
 cd /var/www/mini-project/laravel/routes
 ```
@@ -340,4 +340,4 @@ Route::get('/', function () {
 
 Now you should be able to view the default laravel page
 ### Rendered Page
-![rendered-page-laravel](https://github.com/philemonnwanne/altschool-cloud-exercises/blob/main/Mini-Project/images/rendered-page.jpg)
+![rendered-page-laravel]()
