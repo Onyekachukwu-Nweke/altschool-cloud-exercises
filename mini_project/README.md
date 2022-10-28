@@ -2,6 +2,7 @@
 ### Procedure
 
 ###### Install LAMP Stack on Debian 11
+- Cloud Provider (Google Cloud)
 - Virtual machine running Debian 11
 - Git, Apache, Wget, Curl
 - Php 8.1 and it's dependencies
