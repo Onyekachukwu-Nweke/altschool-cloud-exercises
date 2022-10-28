@@ -50,7 +50,7 @@ php8.1-xml php8.1-xmlrpc php8.1-curl php8.1-gd php8.1-imagick php8.1-cli php8.1-
 php8.1-imap php8.1-mbstring php8.1-opcache php8.1-soap php8.1-zip php8.1-intl -y
 ```
 
-Once PHP is installed you can check the version using the following command.
+Once PHP is installed I can check the version using the following command.
 ```php
 php -v
 ```
@@ -58,7 +58,7 @@ php -v
 
 ### 4. Install mySQL
 
-The next step is to install our database server on our virtual machine
+The next step is to install our database server on my virtual machine
 Follow steps below to Install mySQL 8.0 on Debian 11 Linux system
 
 Add mySQL Dev apt repository. MySQL 8.0 packages are available on official mySQL Dev apt repository.
@@ -97,7 +97,7 @@ mysql -u root
 ```
 ALTER USER 'root'@'localhost' IDENTIFIED BY 'yourNewPass';
 ```
-> Change `yourNewPass` to your desired password and do not remove the quotes and the semi-colon. In most cases you should also set up individual user accounts before working extensively with the database as well (optional). Also remember this password as you will have to use it in a coming step
+> `yourNewPass` is not my desired password but dummy text due to security reasons. In most cases you should also set up individual user accounts before working extensively with the database as well (optional). Also remember this password as you will have to use it in a coming step
 
 
 To verify that the mySQL server is running, type:
@@ -115,7 +115,7 @@ mysql -u root -p
 Replace the “your password” with the password you had set up before installation. Once we are logged in, we can now create a database using the following command:
 
 ```
-CREATE DATABASE yourdatabase;
+CREATE DATABASE newlaravel;
 ```
 
 ### 6. Install Laravel 8 Using Composer 
@@ -130,13 +130,13 @@ Create a directory to house my laravel project
 mkdir altschool
 ```
 
-I switched to the folder housing the laravel application
+I cloned the repo to the folder housing the laravel application
 ```php
 cd altschool
 git clone https://github.com/f1amy/laravel-realworld-example-app.git
 ```
 
-Rename the cloned git repo to whatever you wish to call your project, for my use case I will name it `laravel`
+I renamed the cloned git repo to `laravel`
 ```php
 mv laravel-realworld-example-app laravel
 ```
@@ -161,19 +161,19 @@ Next, edit the `.env` file and define your database:
 nano .env
 ```
 
-`Note`: Configure your `.env` file just as it is in the output below, only make changes to the `DB_DATABASE` and `DB_PASSWORD` lines
+`Note`: I Configure your `.env` file just as it is in the output below, only make changes to the `DB_DATABASE` and `DB_PASSWORD` lines
 
 ```php
 DB_CONNECTION=mysql
 DB_HOST=localhost
 DB_PORT=3306
-DB_DATABASE=enter the name of your database here
+DB_DATABASE=newlaravel
 DB_USERNAME=root
-DB_PASSWORD=enter your mysql root password here
+DB_PASSWORD=yourNewPass
 ```
 After updating your .env file, press CTRL+X, Y, and Enter key to save the .env file.
 
-Next, change the permission and ownership of `altschool` and `laravel` directory
+Next, change the permission and ownership of `laravel` directory
 ```php
 chown -R www-data:www-data /var/www/altschool/laravel
 chmod -R 775 /var/www/altschool/laravel
@@ -223,7 +223,6 @@ composer install
 ```
 
 Generate the artisan key with the following command 
-> (make sure you are in the `/var/www/altschool-onyeka/laravel`) directory before executing any command that starts with `php artisan`
 ```php
 php artisan key:generate
 ```
@@ -238,12 +237,12 @@ nano /etc/apache2/sites-available/altschool.conf
 Add the following lines
 ```php
 <VirtualHost *:80>
-    ServerAdmin admin@altschool-onyeka.me
-    ServerName altschool-onyeka.me
-    ServerAlias www.altschool-onyeka.me
-    DocumentRoot /var/www/altschool-onyeka/laravel/public
+    ServerAdmin admin@onyekachukwuejiofornweke.me
+    ServerName onyekachukwuejiofornweke.me
+    ServerAlias www.onyekachukwuejiofornweke.me
+    DocumentRoot /var/www/altschool/laravel/public
     
-    <Directory /var/www/altschool-onyeka/laravel/public>
+    <Directory /var/www/altschool/laravel/public>
         Options Indexes MultiViews
         AllowOverride None
         Require all granted
@@ -267,7 +266,7 @@ Finally, reload the Apache service to apply the changes
 systemctl restart apache2
 ```
 
-I pointed virtual domain to my IP address by editing the `/etc/hosts` file and adding your IP address and your desired `virtual domain name` which in my case is `altschool.me`.
+I pointed virtual domain to my IP address by editing the `/etc/hosts` file and adding your IP address and your desired `virtual domain name` which in my case is `onyekachukwuejiofornweke.me`.
 ```
 nano /etc/hosts
 ```
@@ -283,15 +282,15 @@ fe00::0 ip6-localnet
 ff00::0 ip6-mcastprefix
 ff02::1 ip6-allnodes
 ff02::2 ip6-allrouters
-172.17.0.2      altschool-onyeka.me
+172.17.0.2      onyekachukwuejiofornweke.me
 ```
 
 
 ### Access Laravel
 <!-- Now, open your web browser and access the Laravel site by visiting your `virtual domain name` or `IP`. You will be redirected to the Laravel default page. If you get a `404 | not found` error, make sure to do the following...
-- move to your `routes` directory in your project directory which in my case is `/var/www/mini-project/laravel/routes` -->
+- move to your `routes` directory in your project directory which in my case is `/var/www/altschool/laravel/routes` -->
 ```
-cd /var/www/mini-project/laravel/routes
+cd /var/www/altschool/laravel/routes
 ```
 - look for a file name `web.php` and remove the comments on the block of code which starts with `Routes::` it should look something like the file below
 ```
