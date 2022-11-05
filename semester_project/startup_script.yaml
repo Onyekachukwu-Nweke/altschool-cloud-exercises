@@ -17,8 +17,6 @@
 
 - name: Install and Configure MySql
   hosts: all
-  var_files:
-    - var/db_config.yaml
   become: true
   become_user: root
   tasks:
@@ -38,6 +36,7 @@
         state: started
         enabled: yes
 
+    - include_vars: var/db_config.yaml
     - name: Creating MySql user
       mysql_user:
         name: "{{ db_user }}"
@@ -46,6 +45,7 @@
         host: "%"
         state: present
 
+    - include_vars: var/db_config.yaml
     - name: Creating MySql database
       mysql_db:
         name: "{{ db_name }}"
@@ -159,14 +159,14 @@
 
 - name: Configure Apache to host Laravel application
   hosts: all
-  var_files:
-    - var/apache_config.yaml
   tasks:
+    - include_vars: var/apache_config.yaml
     - name: Set up Apache virtual Host
       template:
         src: files/onyekachukwuejiofornweke.conf.j2
         dest: /etc/apache2/sites-available/{{ http_conf }}
 
+    - include_vars: var/apache_config.yaml
     - name: Enable Laravel application
       shell: /usr/sbin/a2ensite {{ http_conf }}
       notify: Reload Apache
