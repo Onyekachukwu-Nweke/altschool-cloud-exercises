@@ -21,9 +21,10 @@
   become_user: root
   tasks:
     - name: Install MySql and dependencies
-      package: "{{item}}"
-      state: present
-      update_cache: yes
+      package: 
+        name: "{{item}}"
+        state: present
+        update_cache: yes
       loop:
         - mysql-server
         - mysql-client
