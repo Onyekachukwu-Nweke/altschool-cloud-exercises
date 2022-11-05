@@ -10,6 +10,7 @@
           - apache2
           - git
           - curl
+          - wget
         state: latest
 
     - name: Bash script to install PHP and some dependencies
