@@ -1,4 +1,4 @@
 ---
-db_user: root
-db_pass: sheyudeywhineme
-db_name: laraveldb
+db_user: "root"
+db_pass: "sheyudeywhineme"
+db_name: "laraveldb"

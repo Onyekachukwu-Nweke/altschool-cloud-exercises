@@ -1,105 +1,193 @@
 ---
-var_files:
-        - var/apache_config.yaml
-        - var/db_config.yaml
-vars:
-        repo_url: "https://github.com/f1amy/laravel-realworld-example-app.git"
-        working_directory: "/var/www/"
-        new_folder: "laravel"
-        def_folder: "laravel-realworld-example-app"
-
-- name: Project dependencies
+- name: Install project dependencies
   hosts: all
   become: true
+  become_user: root
   tasks:
-          - name: install apache2, curl and git
-            package:
-                name:
-                      - apache2
-                      - git
-                      - curl
-                state: latest
+    - name: install apache2, curl and git
+      package:
+        name:
+          - apache2
+          - git
+          - curl
+        state: latest
 
-          - name: Bash script to update and upgrade server and install some dependencies
-            script: startup_script.sh
+    - name: Bash script to install PHP and some dependencies
+      script: startup_script.sh
 
 - name: Install and Configure MySql
   hosts: all
+  var_files:
+    - var/db_config.yaml
   become: true
+  become_user: root
   tasks:
-          - name: Install MySql and dependencies
-            package: "{{item}}"
-            state: present
-            update_cache: yes
-            loop:
-                  - mysql-server
-                  - mysql-client
-                  - python3-mysqldb
-                  - libmysqlclient-dev
-            become: true
+    - name: Install MySql and dependencies
+      package: "{{item}}"
+      state: present
+      update_cache: yes
+      loop:
+        - mysql-server
+        - mysql-client
+        - python3-mysqldb
+        - libmysqlclient-dev
 
-          - name: Start and Enable MySql service
-            service:
-                  name: mysql
-                  state: started
-                  enabled: yes
+    - name: Start and Enable MySql service
+      service:
+        name: mysql
+        state: started
+        enabled: yes
 
-          - name: Creating MySql user
-            mysql_user:
-                  name: "{{ db_user }}"
-                  password: "{{ db_pass }}"
-                  priv: '*.*:ALL'
-                  host: '%'
-                  state: present
+    - name: Creating MySql user
+      mysql_user:
+        name: "{{ db_user }}"
+        password: "{{ db_pass }}"
+        priv: "*.*:ALL"
+        host: "%"
+        state: present
 
-          - name: Creating MySql database
-            mysql_db:
-                  name: "{{ db_name }}"
-                  state: present
+    - name: Creating MySql database
+      mysql_db:
+        name: "{{ db_name }}"
+        state: present
 
-          - name: Enable remote login
-            lineinfile:
-                  path: /etc/mysql/mysql.conf.d/mysqld.cnf
-                  regexp: '^bind-address'
-                  line: 'bind-address = 0.0.0.0'
-                  backup: yes
-            notify:
-                  - Restart mysql
+    - name: Enable remote login
+      lineinfile:
+        path: /etc/mysql/mysql.conf.d/mysqld.cnf
+        regexp: "^bind-address"
+        line: "bind-address = 0.0.0.0"
+        backup: yes
+      notify:
+        - Restart mysql
 
   handlers:
-          - name: Restart mysql
-            service:
-                  name: mysql
-                  state: restarted
+    - name: Restart mysql
+      service:
+        name: mysql
+        state: restarted
 
 - name: Cloning the github repo
   hosts: all
-  become: yes
+  vars:
+    repo_url: "https://github.com/f1amy/laravel-realworld-example-app.git"
+    working_directory: "/var/www"
+    new_folder: "laravel"
+    def_folder: "laravel-realworld-example-app"
+  become: true
+  become_user: root
   tasks:
-        - name: Pull changes from GitHub
-          git:
-                repo: "{{ repo_url }}"
-                dest: "{{ working_directory }}"
+    - name: Pull changes from GitHub
+      git:
+        repo: "{{ repo_url }}"
+        dest: "{{ working_directory }}"
 
-        - name: Check if folder exists
-          ansible.builtin.stat:
-                path: "/var/www/{{ def_folder }}"
-          register: check_file_name
+    - name: Check if folder exists
+      ansible.builtin.stat:
+        path: "{{ working_directory }}/{{ def_folder }}"
+      register: check_file_name
 
-        - name: print debug if any error
-          ansible.builtin.debug:
-                  var: check_file_name
+    - name: print debug if any error
+      ansible.builtin.debug:
+        var: check_file_name
 
-        - name: Rename repository folder
-          ansible.builtin.copy:
-                remote_src: true
-                src: "/var/www/{{ def_folder }}"
-                dest: "/var/www/{{ new_folder }}"
-          when: check_file_name.stat.exists
+    - name: Rename repository folder
+      ansible.builtin.copy:
+        remote_src: true
+        src: "{{ working_directory }}/{{ def_folder }}"
+        dest: "{{ working_directory }}/{{ new_folder }}"
+      when: check_file_name.stat.exists
 
-        - name: delete the old folder
-          ansible_builtin.file:
-                path: "/var/www/{{ def_folder }}"
-                state: absent
-          when: check_file_name.stat.exists
+    - name: delete the old folder
+      ansible_builtin.file:
+        path: "{{ working_directory }}/{{ def_folder }}"
+        state: absent
+      when: check_file_name.stat.exists
 
+    - name: Change folder ownership and permissions
+      file:
+        path: "{{ working_directory }}/{{ new_folder }}"
+        state: directory
+        recurse: yes
+        owner: www-data
+        group: www-data
+        mode: "0775"
+
+- name: Install Composer and move it
+  hosts: all
+  become: true
+  become_user: root
+  tasks:
+    - name: Install Composer
+      script: curl -sS https://getcomposer.org/installer | php
+
+    - name: Move Composer
+      script: mv composer.phar /usr/local/bin/composer
+
+    - name: Make the composer file executable
+      script: chmod +x /usr/local/bin/composer
+
+- name: Configure Laravel App
+  hosts: all
+  vars:
+    working_directory: "/var/www"
+    new_folder: "laravel"
+  tasks:
+    - name: Install dependencies with composer
+      become: false
+      composer:
+        command: install
+        args:
+          chdir: "{{ working_directory }}/{{ new_folder }}"
+
+    - name: Generate application key
+      become: true
+      command: php artisan key:generate
+      args:
+        chdir: "{{ working_directory }}/{{ new_folder }}"
+
+    - name: Configure Cache configuration
+      become: true
+      command: php artisan migrate:fresh
+      args:
+        chdir: "{{ working_directory }}/{{ new_folder }}"
+
+    - name: Run Migrations + Seeding
+      become: true
+      command: php artisan migrate --seed
+      args:
+        chdir: "{{ working_directory }}/{{ new_folder }}"
+
+- name: Configure Apache to host Laravel application
+  hosts: all
+  var_files:
+    - var/apache_config.yaml
+  tasks:
+    - name: Set up Apache virtual Host
+      template:
+        src: files/onyekachukwuejiofornweke.conf.j2
+        dest: /etc/apache2/sites-available/{{ http_conf }}
+
+    - name: Enable Laravel application
+      shell: /usr/sbin/a2ensite {{ http_conf }}
+      notify: Reload Apache
+
+    - name: Enable Laravel application
+      shell: /usr/sbin/a2enmod rewrite
+      notify: Reload Apache
+
+    - name: Disable default Apache site
+      shell: /usr/sbin/a2dissite 000-default.conf
+      when: disable_default
+      notify: Reload Apache
+
+  handlers:
+    - name: Reload Apache
+      service:
+        name: apache2
+        state: reloaded
+
+    - name: Restart Apache
+      service:
+        name: apache2
+        state: restarted
+  
