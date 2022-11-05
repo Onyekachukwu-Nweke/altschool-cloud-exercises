@@ -1,16 +1,105 @@
 ---
-- name: Update and upgrade server
-  hosts: all
-  become: yes
-  tasks:
-        - name: run bash script to update and upgrade server
-          script: startup_script.sh
+var_files:
+        - var/apache_config.yaml
+        - var/db_config.yaml
+vars:
+        repo_url: "https://github.com/f1amy/laravel-realworld-example-app.git"
+        working_directory: "/var/www/"
+        new_folder: "laravel"
+        def_folder: "laravel-realworld-example-app"
 
-- name: install apache
+- name: Project dependencies
+  hosts: all
+  become: true
+  tasks:
+          - name: install apache2, curl and git
+            package:
+                name:
+                      - apache2
+                      - git
+                      - curl
+                state: latest
+
+          - name: Bash script to update and upgrade server and install some dependencies
+            script: startup_script.sh
+
+- name: Install and Configure MySql
+  hosts: all
+  become: true
+  tasks:
+          - name: Install MySql and dependencies
+            package: "{{item}}"
+            state: present
+            update_cache: yes
+            loop:
+                  - mysql-server
+                  - mysql-client
+                  - python3-mysqldb
+                  - libmysqlclient-dev
+            become: true
+
+          - name: Start and Enable MySql service
+            service:
+                  name: mysql
+                  state: started
+                  enabled: yes
+
+          - name: Creating MySql user
+            mysql_user:
+                  name: "{{ db_user }}"
+                  password: "{{ db_pass }}"
+                  priv: '*.*:ALL'
+                  host: '%'
+                  state: present
+
+          - name: Creating MySql database
+            mysql_db:
+                  name: "{{ db_name }}"
+                  state: present
+
+          - name: Enable remote login
+            lineinfile:
+                  path: /etc/mysql/mysql.conf.d/mysqld.cnf
+                  regexp: '^bind-address'
+                  line: 'bind-address = 0.0.0.0'
+                  backup: yes
+            notify:
+                  - Restart mysql
+
+  handlers:
+          - name: Restart mysql
+            service:
+                  name: mysql
+                  state: restarted
+
+- name: Cloning the github repo
   hosts: all
   become: yes
   tasks:
-        - name: install apache2
-          apt:
-                name: apache2
-                state: present
+        - name: Pull changes from GitHub
+          git:
+                repo: "{{ repo_url }}"
+                dest: "{{ working_directory }}"
+
+        - name: Check if folder exists
+          ansible.builtin.stat:
+                path: "/var/www/{{ def_folder }}"
+          register: check_file_name
+
+        - name: print debug if any error
+          ansible.builtin.debug:
+                  var: check_file_name
+
+        - name: Rename repository folder
+          ansible.builtin.copy:
+                remote_src: true
+                src: "/var/www/{{ def_folder }}"
+                dest: "/var/www/{{ new_folder }}"
+          when: check_file_name.stat.exists
+
+        - name: delete the old folder
+          ansible_builtin.file:
+                path: "/var/www/{{ def_folder }}"
+                state: absent
+          when: check_file_name.stat.exists
+
