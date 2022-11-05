@@ -2,6 +2,7 @@
 ### Procedure
 
 ###### Install LAMP Stack on Debian 11
+- Cloud Provider (Google Cloud)
 - Virtual machine running Debian 11
 - Git, Apache, Wget, Curl
 - Php 8.1 and it's dependencies
@@ -175,10 +176,10 @@ After updating your .env file, press CTRL+X, Y, and Enter key to save the .env f
 
 Next, change the permission and ownership of `laravel` directory
 ```php
-chown -R www-data:www-data /var/www/altschool/laravel
-chmod -R 775 /var/www/altschool/laravel
-chmod -R 775 /var/www/altschool/laravel/storage
-chmod -R 775 /var/www/altschool/laravel/bootstrap/cache
+chown -R www-data:www-data /var/www/html/laravel
+chmod -R 775 /var/www/html/laravel
+chmod -R 775 /var/www/html/laravel/storage
+chmod -R 775 /var/www/html/laravel/bootstrap/cache
 ```
 
 ### 8. Install Composer
@@ -227,6 +228,11 @@ Generate the artisan key with the following command
 php artisan key:generate
 ```
 
+To migrate Database
+```php
+php artisan migrate
+```
+
 ### 10. Configure Apache to Host Laravel 8
 
 I created an Apache virtual host configuration file to host my Laravel application.
@@ -240,9 +246,9 @@ Add the following lines
     ServerAdmin admin@onyekachukwuejiofornweke.me
     ServerName onyekachukwuejiofornweke.me
     ServerAlias www.onyekachukwuejiofornweke.me
-    DocumentRoot /var/www/altschool/laravel/public
+    DocumentRoot /var/www/html/laravel/public
     
-    <Directory /var/www/altschool/laravel/public>
+    <Directory /var/www/html/laravel/public>
         Options Indexes MultiViews
         AllowOverride None
         Require all granted
@@ -282,7 +288,7 @@ fe00::0 ip6-localnet
 ff00::0 ip6-mcastprefix
 ff02::1 ip6-allnodes
 ff02::2 ip6-allrouters
-172.17.0.2      onyekachukwuejiofornweke.me
+35.225.104.78      onyekachukwuejiofornweke.me
 ```
 
 
