@@ -99,7 +99,7 @@
       when: check_file_name.stat.exists
 
     - name: delete the old folder
-      ansible_builtin.file:
+      ansible.builtin.file:
         path: "{{ working_directory }}/{{ def_folder }}"
         state: absent
       when: check_file_name.stat.exists
