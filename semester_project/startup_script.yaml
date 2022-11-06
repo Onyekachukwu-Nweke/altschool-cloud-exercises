@@ -1,10 +1,10 @@
 ---
-- name: Install project dependencies
+- name: Install Project dependencies
   hosts: all
   become: true
   become_user: root
   tasks:
-    - name: install apache2, curl and git
+    - name: install apache2, curl, wget and git
       package:
         name:
           - apache2
@@ -13,8 +13,58 @@
           - wget
         state: latest
 
-    - name: Bash script to install PHP and some dependencies
-      script: startup_script.sh
+    - name: Install some prerequisites
+      package:
+        name:
+          - ca-certificates
+          - apt-transport-https
+          - software-properties-common
+        state: latest
+        update_cache: yes
+
+    - name: Download Keys
+      shell: wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg
+
+    - name: Echo Keys to php
+      shell: echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main"
+      register: result
+
+    - name: Add keys to php.d file
+      copy:
+        content: "{{ result.stdout[0] }}"
+        dest: /etc/apt/sources.list.d/php.list
+
+    - name: Add ppa:ondrej repo
+      apt_repository:
+        repo: "ppa:ondrej/php"
+
+    - name: Update Cache
+      update_cache: yes
+
+    - name: Install PHP8.1 and its core dependencies
+      package:
+        name:
+          - php8.1
+          - php8.1-fpm
+          - libapache2-mod-php
+        state: present
+
+    - name: Install other php dependencies
+      package:
+        name:
+          - php8.1-zip
+          - php8.1-mysql
+          - php8.1-xml
+          - php8.1-curl
+          - php8.1-mbstring
+          - php8.1-memcache
+          - php8.1-opcache
+          - unzip
+          - php8.1-oauth
+          - php8.1-gd
+          - php8.1-yaml
+        state: present
+        update_cache: yes
 
 - name: Install and Configure MySql
   hosts: all

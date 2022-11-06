@@ -5,7 +5,7 @@ sudo apt update -y && sudo apt upgrade -y
 #Prerequisites
 #sudo apt install -y wget git apache2 curl
 
-apt install ca-certificates apt-transport-https software-properties-common -y
+#apt install ca-certificates apt-transport-https software-properties-common -y
 
 wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg
 
