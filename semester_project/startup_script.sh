@@ -22,14 +22,14 @@ apt install php8.1 -y
 
 apt install php8.1-fpm
 
-apt install php8.1-xml
+apt install php-xml
 
-apt install php8.1-zip
+apt install php-zip
 
 apt install libapache2-mod-php
 
 #Install a few dependencies
-apt install php8.1-{gd,zip,pgsql,oauth,yaml,mbstring,memcache,opcache} unzip -y
+apt install php-{gd,zip,mysql,oauth,yaml,mbstring,memcache,opcache} unzip -y
 
 apt upgrade -y
 
