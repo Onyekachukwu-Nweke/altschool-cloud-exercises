@@ -4,10 +4,20 @@
 
 sudo apt update && sudo apt upgrade
 
-sudo apt install postgresql post
-# #Install composer
-# curl -sS https://getcomposer.org/installer | php
+# install all required dependencies
+apt-get install gnupg2 -y
 
-# #move composer.phar file and make it executable
-# mv composer.phar /usr/local/bin/composer
-# chmod +x /usr/local/bin/composer
+#installing all the dependencies, add the PostgreSQL repository and GPG key
+sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+
+wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
+
+# Update the remote machine
+apt-get update -y
+
+# Install postgres 14
+apt-get install postgresql-14 postgresql-client-14 postgresql-server-dev-14 libpq-dev -y
+
+# Start Postgresql and enable on the host machine
+systemctl start postgresql
+systemctl enable postgresql
