@@ -87,6 +87,7 @@
       mysql_user:
         name: root
         password: "{{ db_root_pass }}"
+        host: '%'
         state: present
 
     - include_vars: var/db_config.yaml
@@ -101,6 +102,7 @@
         name: "{{ db_user }}"
         password: "{{ db_pass }}"
         priv: "*.*:ALL"
+        host: '%'
         state: present
 
     - name: Remove anonymous users
