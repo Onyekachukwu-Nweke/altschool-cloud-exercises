@@ -26,20 +26,14 @@
       shell: wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg
 
     - name: Echo Keys to php
-      shell: echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main"
-      register: result
-
-    - name: Add keys to php.d file
-      copy:
-        content: "{{ result.stdout[0] }}"
-        dest: /etc/apt/sources.list.d/php.list
+      shell: echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" | sudo tee /etc/apt/sources.list.d/php.list
 
     - name: Add ppa:ondrej repo
+      ignore_errors: true
       apt_repository:
-        repo: "ppa:ondrej/php"
-
-    - name: Update Cache
-      update_cache: yes
+          repo: ppa:ondrej/php
+          state: present
+          update_cache: yes
 
     - name: Install PHP8.1 and its core dependencies
       package:
