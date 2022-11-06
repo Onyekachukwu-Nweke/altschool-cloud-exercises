@@ -66,7 +66,7 @@
   become_user: root
   tasks:
     - name: Install MySql and dependencies
-      package: 
+      package:
         name: "{{item}}"
         state: present
         update_cache: yes
@@ -99,12 +99,18 @@
 
     - name: Enable remote login
       lineinfile:
-        path: /etc/mysql/mysql.conf.d/mysqld.cnf
+        path: /etc/mysql/my.cnf
         regexp: "^bind-address"
         line: "bind-address = 0.0.0.0"
         backup: yes
       notify:
         - Restart mysql
+
+    - name: Remove anonymous users
+      command: 'mysql -ne "{{ item }}"'
+      with_items:
+        - DELETE FROM mysql.user WHERE User=''
+      changed_when: False
 
   handlers:
     - name: Restart mysql
@@ -236,4 +242,3 @@
       service:
         name: apache2
         state: restarted
-  
