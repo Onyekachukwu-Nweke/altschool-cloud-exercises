@@ -83,12 +83,10 @@
         enabled: yes
 
     - include_vars: var/db_config.yaml
-    - name: Creating MySql user
+    - name: Creating root password
       mysql_user:
-        name: "{{ db_user }}"
-        password: "{{ db_pass }}"
-        priv: "*.*:ALL"
-        host: "%"
+        name: root
+        password: "{{ db_root_pass }}"
         state: present
 
     - include_vars: var/db_config.yaml
@@ -97,14 +95,13 @@
         name: "{{ db_name }}"
         state: present
 
-    - name: Enable remote login
-      lineinfile:
-        path: /etc/mysql/my.cnf
-        regexp: "^bind-address"
-        line: "bind-address = 0.0.0.0"
-        backup: yes
-      notify:
-        - Restart mysql
+    - include_vars: var/db_config.yaml
+    - name: Creating MySql user
+      mysql_user:
+        name: "{{ db_user }}"
+        password: "{{ db_pass }}"
+        priv: "*.*:ALL"
+        state: present
 
     - name: Remove anonymous users
       command: 'mysql -ne "{{ item }}"'
