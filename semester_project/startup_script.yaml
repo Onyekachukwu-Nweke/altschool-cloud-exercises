@@ -112,8 +112,6 @@
         state: present
 
     - name: Remove anonymous users
-      login_user: root
-      login_password: 'sheyudeywhineme'
       ignore_errors: true
       command: 'mysql -ne "{{ item }}"'
       with_items:
@@ -130,15 +128,17 @@
   hosts: all
   vars:
     repo_url: "https://github.com/f1amy/laravel-realworld-example-app.git"
-    working_directory: "/var/www"
+    working_directory: "/var/www/html"
     new_folder: "laravel"
   become: true
   become_user: root
   tasks:
     - name: Pull changes from GitHub
+      ignore_errors: true
       git:
         repo: "{{ repo_url }}"
         dest: "{{ working_directory }}/{{ new_folder }}"
+        clone: false
 
     - name: Change folder ownership and permissions
       file:
@@ -152,7 +152,10 @@
     - name: Configure .env file
       template:
         src: files/.env.j2
-        dest: "{{ new_folder }}/.env.example"
+        dest: "{{ working_directory }}/{{ new_folder }}/.env.example"
+
+    - name: Rename .env file
+      shell: mv "{{ working_directory }}/{{ new_folder }}/.env.example" "{{ working_directory }}/{{ new_folder }}/.env"
 
 - name: Install Composer and move it
   hosts: all
@@ -160,29 +163,25 @@
   become_user: root
   tasks:
     - name: Install Composer
-      remote_src: yes
-      script: curl -sS https://getcomposer.org/installer | php
+      shell: curl -sS https://getcomposer.org/installer | php
 
     - name: Move Composer
-      remote_src: yes
-      script: mv composer.phar /usr/local/bin/composer
+      shell: mv composer.phar /usr/local/bin/composer
 
     - name: Make the composer file executable
-      remote_src: yes
-      script: chmod +x /usr/local/bin/composer
+      shell: chmod +x /usr/local/bin/composer
 
 - name: Configure Laravel App
   hosts: all
   vars:
-    working_directory: "/var/www"
+    working_directory: "/var/www/html"
     new_folder: "laravel"
   tasks:
     - name: Install dependencies with composer
-      become: false
+      ignore_errors: true
       composer:
         command: install
-        args:
-          chdir: "{{ working_directory }}/{{ new_folder }}"
+        working_dir: "{{ working_directory }}/{{ new_folder }}"
 
     - name: Generate application key
       become: true
@@ -202,8 +201,28 @@
       args:
         chdir: "{{ working_directory }}/{{ new_folder }}"
 
+    - name: Uncomment web.php file
+      become: true
+      become_user: root
+      ignore_errors: true
+      replace:
+           path: "{{ working_directory }}/{{ new_folder }}/routes/web.php"
+           regexp: "^/*Route::get('/', function () {"
+           replace: "Route::get('/', function () {"
+
+    - name: Uncomment web.php file part 2
+      become: true
+      become_user: root
+      ignore_errors: true
+      replace:
+           path: "{{ working_directory }}/{{ new_folder }}/routes/web.php"
+           regexp: "^});*/"
+           replace: "});"
+
 - name: Configure Apache to host Laravel application
   hosts: all
+  become: true
+  become_user: root
   tasks:
     - include_vars: var/apache_config.yaml
     - name: Set up Apache virtual Host
@@ -216,14 +235,27 @@
       shell: /usr/sbin/a2ensite {{ http_conf }}
       notify: Reload Apache
 
-    - name: Enable Laravel application
-      shell: /usr/sbin/a2enmod rewrite
-      notify: Reload Apache
-
     - name: Disable default Apache site
       shell: /usr/sbin/a2dissite 000-default.conf
       when: disable_default
       notify: Reload Apache
+
+    - name: Enable Laravel application
+      shell: /usr/sbin/a2enmod rewrite
+      notify: Reload Apache
+
+    - name: Put our IP address to point to our domain
+      shell: echo "34.123.55.184    onyekachukwuejiofornweke.me" >> /etc/hosts
+
+    - name: Install Certibot
+      ignore_errors: true
+      package:
+           - name: python3-certbot-apache
+      state: present
+
+    - name: Install SSL certificate using Let's Encrypt
+      ignore_errors: true
+      shell: certbot --apache -d onyekachukwuejiofornweke.me -m nwekeejioforscheller@gmail.com --agree-tos
 
   handlers:
     - name: Reload Apache
