@@ -1,5 +1,5 @@
 ---
-db_root_pass: "sheyudeywhineme"
+db_user: "root"
+db_pass: "sheyudeywhineme"
 db_name: "laraveldb"
-db_user: "altschool"
-db_pass: "cloudeng"
+

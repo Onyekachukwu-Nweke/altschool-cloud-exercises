@@ -96,9 +96,9 @@
       mysql_user:
         login_user: root
         login_password: 'sheyudeywhineme'
-        name: "root"
+        name: "{{ db_user }}"
         host_all: yes
-        password: "{{ db_root_pass }}"
+        password: "{{ db_pass }}"
         priv: "*.*:ALL"
         host: '%'
         state: present
@@ -112,6 +112,8 @@
         state: present
 
     - name: Remove anonymous users
+      login_user: root
+      login_password: 'sheyudeywhineme'
       ignore_errors: true
       command: 'mysql -ne "{{ item }}"'
       with_items:
@@ -147,19 +149,26 @@
         group: www-data
         mode: "0775"
 
+    - name: Configure .env file
+      template:
+        src: files/.env.j2
+        dest: "{{ new_folder }}/.env.example"
+
 - name: Install Composer and move it
   hosts: all
   become: true
   become_user: root
-  remote_src: yes
   tasks:
     - name: Install Composer
+      remote_src: yes
       script: curl -sS https://getcomposer.org/installer | php
 
     - name: Move Composer
+      remote_src: yes
       script: mv composer.phar /usr/local/bin/composer
 
     - name: Make the composer file executable
+      remote_src: yes
       script: chmod +x /usr/local/bin/composer
 
 - name: Configure Laravel App
