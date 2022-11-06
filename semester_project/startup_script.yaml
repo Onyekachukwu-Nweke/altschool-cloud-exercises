@@ -31,9 +31,9 @@
     - name: Add ppa:ondrej repo
       ignore_errors: true
       apt_repository:
-          repo: ppa:ondrej/php
-          state: present
-          update_cache: yes
+        repo: ppa:ondrej/php
+        state: present
+        update_cache: yes
 
     - name: Install PHP8.1 and its core dependencies
       package:
