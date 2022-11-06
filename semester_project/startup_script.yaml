@@ -71,10 +71,10 @@
         state: present
         update_cache: yes
       loop:
-        - mysql-server
-        - mysql-client
+        - default-mysql-server
+        - default-mysql-client
         - python3-mysqldb
-        - libmysqlclient-dev
+        - default-libmysqlclient-dev
 
     - name: Start and Enable MySql service
       service:
