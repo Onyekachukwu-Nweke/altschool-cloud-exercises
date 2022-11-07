@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+ROOT_PWD="onyeka"
+
 #Be a root user when running this script
 
 sudo apt update && sudo apt upgrade
@@ -21,3 +23,11 @@ apt-get install postgresql-14 postgresql-client-14 postgresql-server-dev-14 libp
 # Start Postgresql and enable on the host machine
 systemctl start postgresql
 systemctl enable postgresql
+
+#To Interact with Postgres and set user password
+echo "ALTER USER postgres PASSWORD '$ROOT_PWD';" | sudo -u postgres psql && echo "\q"
+
+#To create a test Database
+echo "CREATE DATABASE testdb;" | sudo -u postgres psql -W "$ROOT_PWD" && echo "\q"
+
+
