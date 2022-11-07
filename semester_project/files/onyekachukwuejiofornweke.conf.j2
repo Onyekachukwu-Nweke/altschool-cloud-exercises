@@ -1,10 +1,10 @@
 <VirtualHost *:80>
-    ServerAdmin admin@{{ http_host }}
+    ServerAdmin admin@{{ httwqp_host }}
     ServerName {{ http_host }}
     ServerAlias www.{{ http_host }}
-    DocumentRoot /var/www/laravel/public
+    DocumentRoot /var/www/html/laravel/public
     
-    <Directory /var/www/laravel/public>
+    <Directory /var/www/html/laravel/public>
         Options Indexes MultiViews
         AllowOverride None
         Require all granted

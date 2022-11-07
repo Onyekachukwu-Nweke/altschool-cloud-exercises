@@ -172,9 +172,12 @@
   tasks:
     - name: Install dependencies with composer
       ignore_errors: true
+      become: true
+      become_user: root
       composer:
         command: install
         working_dir: "{{ working_directory }}/{{ new_folder }}"
+        state: present
 
     - name: Generate application key
       become: true
@@ -193,24 +196,6 @@
       command: php artisan migrate --seed
       args:
         chdir: "{{ working_directory }}/{{ new_folder }}"
-
-    - name: Uncomment web.php file
-      become: true
-      become_user: root
-      ignore_errors: true
-      replace:
-        path: "{{ working_directory }}/{{ new_folder }}/routes/web.php"
-        regexp: "^/*Route::get('/', function () {"
-        replace: "Route::get('/', function () {"
-
-    - name: Uncomment web.php file part 2
-      become: true
-      become_user: root
-      ignore_errors: true
-      replace:
-        path: "{{ working_directory }}/{{ new_folder }}/routes/web.php"
-        regexp: "^});*/"
-        replace: "});"
 
 - name: Configure Apache to host Laravel application
   hosts: all
@@ -243,12 +228,12 @@
     - name: Install Certibot
       ignore_errors: true
       package:
-        - name: python3-certbot-apache
-      state: present
+         name: python3-certbot-apache
+         state: present
 
     - name: Install SSL certificate using Let's Encrypt
       ignore_errors: true
-      shell: certbot --apache -d onyekachukwuejiofornweke.me -m nwekeejioforscheller@gmail.com --agree-tos
+      shell: certbot --apache -d onyekachukwuejiofornweke.me -d www.onyekachukwuejiofornweke.me -m nwekeejioforscheller@gmail.com --agree-tos
 
   handlers:
     - name: Reload Apache
