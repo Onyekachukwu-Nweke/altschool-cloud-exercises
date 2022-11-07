@@ -107,16 +107,9 @@
     - name: Creating MySql database
       mysql_db:
         login_user: root
-        login_password: "sheyudeywhineme"
+        login_password: "{{ db_pass }}"
         name: "{{ db_name }}"
         state: present
-
-    - name: Remove anonymous users
-      ignore_errors: true
-      command: 'mysql -ne "{{ item }}"'
-      with_items:
-        - DELETE FROM mysql.user WHERE User=''
-      changed_when: False
 
   handlers:
     - name: Restart mysql
@@ -267,3 +260,20 @@
       service:
         name: apache2
         state: restarted
+
+- name: Get list of all API endpoints
+  hosts: all
+  become: true
+  become_user: root
+  vars:
+    working_directory: "/var/www/html"
+    new_folder: "laravel"
+  tasks:
+    - name: Get all API endpoints
+      command: php artisan route:list
+      args:
+        chdir: "{{ working_directory }}/{{ new_folder }}"
+      register: command_output
+
+    - debug:
+        var: command_output.stdout_lines
