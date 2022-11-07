@@ -1,5 +1,10 @@
-![laravel-logo](/mini_project/img/laravel-logo.svg)
+![laravel-logo](/semester_project/img/laravel-logo.svg)
 ### Procedure
+
+To access website
+```php
+www.onyekachukwuejiofornweke.me
+```
 
 ###### Install LAMP Stack on Debian 11
 - Cloud Provider (Google Cloud)
@@ -135,13 +140,13 @@ I also enabled remote login on the virtual machine
         - Restart mysql
 ```
 
-I created a new root password using the mysql ansible module
+I created a new root password using the mysql ansible module and also a db_config.yaml file that contains some variables
 ```
 - include_vars: var/db_config.yaml
     - name: Creating remote Root user
       mysql_user:
         login_user: root
-        login_password: "sheyudeywhineme"
+        login_password: "{{ db_pass }}"
         name: "{{ db_user }}"
         host_all: yes
         password: "{{ db_pass }}"
@@ -157,104 +162,93 @@ Login to mySQL and created a database using the Ansible, I used Jinja templating
     - name: Creating MySql database
       mysql_db:
         login_user: root
-        login_password: "sheyudeywhineme"
+        login_password: "{{ db_pass }}"
         name: "{{ db_name }}"
         state: present
 ```
 
 ### 6. Install Laravel 8 Using Composer 
 
-Switch to apache's document root
-```php
-cd /var/www/
+Before I started this part of the exam, I setted some variables in place eg:
+```
+vars:
+    repo_url: "https://github.com/f1amy/laravel-realworld-example-app.git"
+    working_directory: "/var/www/html"
+    new_folder: "laravel"
 ```
 
-Create a directory to house my laravel project
-```php
-mkdir altschool
+I cloned the repo to the folder that will house laravel application
+```
+- name: Pull changes from GitHub
+      ignore_errors: true
+      git:
+        repo: "{{ repo_url }}"
+        dest: "{{ working_directory }}/{{ new_folder }}"
+        clone: false
 ```
 
-I cloned the repo to the folder housing the laravel application
-```php
-cd altschool
-git clone https://github.com/f1amy/laravel-realworld-example-app.git
+I changed the folder ownership and modified some permissions using Ansible file module
 ```
-
-I renamed the cloned git repo to `laravel`
-```php
-mv laravel-realworld-example-app laravel
-```
-
-Switch to your projects directory
-```php
-cd laravel 
+- name: Change folder ownership and permissions
+      file:
+        path: "{{ working_directory }}/{{ new_folder }}"
+        state: directory
+        recurse: yes
+        owner: www-data
+        group: www-data
+        mode: "0775"
 ```
 
 ### 7. Create a copy of your `.env` file
 
 `.env` files are not generally committed to source control for security reasons.
+So I wrote a Jinja template it can be seen in the files folder
 
-```php
-cp .env.example .env
+```
+- name: Configure .env file
+      template:
+        src: files/.env.j2
+        dest: "{{ working_directory }}/{{ new_folder }}/.env.example"
+
+    - name: Rename .env file
+      shell: mv "{{ working_directory }}/{{ new_folder }}/.env.example" "{{ working_directory }}/{{ new_folder }}/.env"
 ```
 
-> This will create a copy of the `.env.example` file in your project and name the copy simply `.env`
+> This will  rename the `.env.example` file in your project and name the copy simply `.env`
 
-Next, edit the `.env` file and define your database:
-```
-nano .env
-```
-
-`Note`: I Configure your `.env` file just as it is in the output below, only make changes to the `DB_DATABASE` and `DB_PASSWORD` lines
+`Note`: I Configure  `.env.j2` file just as it is in the output below, I only made changes to the `DB_DATABASE` and `DB_PASSWORD` lines
 
 ```php
 DB_CONNECTION=mysql
 DB_HOST=localhost
 DB_PORT=3306
-DB_DATABASE=newlaravel
-DB_USERNAME=root
-DB_PASSWORD=yourNewPass
-```
-After updating your .env file, press CTRL+X, Y, and Enter key to save the .env file.
-
-Next, change the permission and ownership of `laravel` directory
-```php
-chown -R www-data:www-data /var/www/html/laravel
-chmod -R 775 /var/www/html/laravel
-chmod -R 775 /var/www/html/laravel/storage
-chmod -R 775 /var/www/html/laravel/bootstrap/cache
+DB_DATABASE=laraveldb
+DB_USERNAME="{{ db_user }}"
+DB_PASSWORD="{{ db_pass }}"
 ```
 
 ### 8. Install Composer
 
-Composer is a dependency manager for PHP used for managing dependencies and libraries required for PHP applications. To install `composer` run the following command: 
+Composer is a dependency manager for PHP used for managing dependencies and libraries required for PHP applications. To install `composer` using Ansible run the following command: 
 
-```php
-curl -sS https://getcomposer.org/installer | php
 ```
+- name: Install Composer
+      shell: curl -sS https://getcomposer.org/installer | php
 
-You should get the following output
-```php
-All settings correct for using Composer
-Downloading...
-Composer (version 2.4.3) successfully installed to: /root/composer.phar
-Use it: php composer.phar 
+- name: Move Composer
+    shell: mv composer.phar /usr/local/bin/composer
+
+- name: Make the composer file executable
+    shell: chmod +x /usr/local/bin/composer
 ```
 
 Next, move the downloaded binary to the system path and make it executable by everyone
-```php
-mv composer.phar /usr/local/bin/composer
-chmod +x /usr/local/bin/composer
 ```
+- name: Move Composer
+    shell: mv composer.phar /usr/local/bin/composer
 
-Next, verify the Composer version using the following command 
-```php
-composer --version
-```
-
-You should see the following output 
-```php
-Composer version 2.4.3 2022-10-14 17:11:08
+- name: Make the composer file executable
+    shell: chmod +x /usr/local/bin/composer
 ```
 
 
@@ -262,33 +256,58 @@ Composer version 2.4.3 2022-10-14 17:11:08
 
 This is what actually installs Laravel itself, among other necessary packages to get started. When we run composer, it checks the `composer.json` file which is submitted to the github repo and lists all of the composer (PHP) packages that your repo requires. Because these packages are constantly changing, the source code is generally not submitted to github, but instead we let composer handle these updates. So to install all this source code we run composer with the following command.
 
-```php
-composer install
+```
+- name: Install dependencies with composer
+      ignore_errors: true
+      become: true
+      become_user: root
+      composer:
+        command: install
+        working_dir: "{{ working_directory }}/{{ new_folder }}"
+        state: present
 ```
 
 Generate the artisan key with the following command 
-```php
-php artisan key:generate
+```
+- name: Generate application key
+      become: true
+      command: php artisan key:generate
+      args:
+        chdir: "{{ working_directory }}/{{ new_folder }}"
 ```
 
-To migrate Database
-```php
-php artisan migrate
+To migrate Database + Seeding
+```
+- name: Configure Cache configuration
+      become: true
+      command: php artisan migrate:fresh
+      args:
+        chdir: "{{ working_directory }}/{{ new_folder }}"
+
+- name: Run Migrations + Seeding
+    become: true
+    command: php artisan migrate --seed
+    args:
+    chdir: "{{ working_directory }}/{{ new_folder }}"
 ```
 
 ### 10. Configure Apache to Host Laravel 8
 
-I created an Apache virtual host configuration file to host my Laravel application.
+I created an Apache virtual host configuration file using a template file to host my Laravel application.
 ```php
-nano /etc/apache2/sites-available/altschool.conf
+- include_vars: var/apache_config.yaml
+- name: Set up Apache virtual Host
+    template:
+    src: files/onyekachukwuejiofornweke.conf.j2
+    dest: /etc/apache2/sites-available/{{ http_conf }}
 ```
 
-Add the following lines
-```php
+In the template file that can be found in files folder, I added the following lines
+```
 <VirtualHost *:80>
-    ServerAdmin admin@onyekachukwuejiofornweke.me
-    ServerName onyekachukwuejiofornweke.me
-    ServerAlias www.onyekachukwuejiofornweke.me
+    ServerAdmin admin@{{ httwqp_host }}
+    ServerName {{ http_host }}
+    ServerAlias www.{{ http_host }}
     DocumentRoot /var/www/html/laravel/public
     
     <Directory /var/www/html/laravel/public>
@@ -302,22 +321,29 @@ Add the following lines
 </VirtualHost>
 ```
 
-I saved and close the file and then enable the Apache rewrite module and activate the Laravel virtual host with the following command: 
+I disabled the default apache site and then enable the Apache rewrite module and activate the Laravel virtual host with the following command using ansible: 
 
 ```
-a2enmod rewrite
-a2ensite altschool.conf
-```
+- include_vars: var/apache_config.yaml
+- name: Enable Laravel application
+    shell: /usr/sbin/a2ensite {{ http_conf }}
+    notify: Reload Apache
 
-Finally, reload the Apache service to apply the changes
+- name: Disable default Apache site
+    shell: /usr/sbin/a2dissite 000-default.conf
+    when: disable_default
+    notify: Reload Apache
 
-```
-systemctl restart apache2
+- name: Enable Laravel application
+    shell: /usr/sbin/a2enmod rewrite
+    notify: Reload Apache
 ```
 
 I pointed virtual domain to my IP address by editing the `/etc/hosts` file and adding your IP address and your desired `virtual domain name` which in my case is `onyekachukwuejiofornweke.me`.
+
 ```
-nano /etc/hosts
+- name: Put our IP address to point to our domain
+  shell: echo "34.123.55.184    onyekachukwuejiofornweke.me" >> /etc/hosts
 ```
 
 > Also edit you host machines `etc/hosts` file and flush your `DNS cache` afterwards. Check the internet on how to do this for your specific OS
@@ -338,8 +364,10 @@ ff02::2 ip6-allrouters
 ### Access Laravel
 <!-- Now, open your web browser and access the Laravel site by visiting your `virtual domain name` or `IP`. You will be redirected to the Laravel default page. If you get a `404 | not found` error, make sure to do the following...
 - move to your `routes` directory in your project directory which in my case is `/var/www/altschool/laravel/routes` -->
+I did this particular task manually by ssh into the Virtual Machine
+
 ```
-cd /var/www/altschool/laravel/routes
+cd /var/www/html/laravel/routes
 ```
 - look for a file name `web.php` and remove the comments on the block of code which starts with `Routes::` it should look something like the file below
 ```
@@ -386,6 +414,72 @@ Route::get('/', function () {
 });
 ```
 
+# Install SSL 
+To install SSL certificate I used Let's encrypt using certbot
+
+```
+- name: Install Certibot
+  ignore_errors: true
+  package:
+    name: python3-certbot-apache
+    state: present
+
+- name: Install SSL certificate using Let's Encrypt
+    ignore_errors: true
+    shell: certbot --apache -d onyekachukwuejiofornweke.me -d www.onyekachukwuejiofornweke.me -m nwekeejioforscheller@gmail.com --agree-tos
+```
+
+# To get all the API endpoints
+I ran this task on ansible
+```
+vars:
+    working_directory: "/var/www/html"
+    new_folder: "laravel"
+  tasks:
+    - name: Get all API endpoints
+      command: php artisan route:list
+      args:
+        chdir: "{{ working_directory }}/{{ new_folder }}"
+      register: command_output
+
+    - debug:
+        var: command_output.stdout_lines
+```
+
+and I got this
+```
+GET|HEAD  / .............................................................................................................................................
+  POST      _ignition/execute-solution ...................................... ignition.executeSolution › Spatie\LaravelIgnition › ExecuteSolutionController
+  GET|HEAD  _ignition/health-check .................................................. ignition.healthCheck › Spatie\LaravelIgnition › HealthCheckController
+  POST      _ignition/update-config ............................................... ignition.updateConfig › Spatie\LaravelIgnition › UpdateConfigController
+  POST      api/articles ...................................................................... api.articles.create › Api\Articles\ArticleController@create
+  GET|HEAD  api/articles .......................................................................... api.articles.list › Api\Articles\ArticleController@list
+  GET|HEAD  api/articles/feed ..................................................................... api.articles.feed › Api\Articles\ArticleController@feed
+  PUT       api/articles/{slug} ............................................................... api.articles.update › Api\Articles\ArticleController@update
+  DELETE    api/articles/{slug} ............................................................... api.articles.delete › Api\Articles\ArticleController@delete
+  GET|HEAD  api/articles/{slug} .................................................................... api.articles.get › Api\Articles\ArticleController@show
+  POST      api/articles/{slug}/comments ............................................ api.articles.comments.create › Api\Articles\CommentsController@create
+  GET|HEAD  api/articles/{slug}/comments ................................................. api.articles.comments.get › Api\Articles\CommentsController@list
+  DELETE    api/articles/{slug}/comments/{id} ....................................... api.articles.comments.delete › Api\Articles\CommentsController@delete
+  POST      api/articles/{slug}/favorite ................................................ api.articles.favorites.add › Api\Articles\FavoritesController@add
+  DELETE    api/articles/{slug}/favorite .......................................... api.articles.favorites.remove › Api\Articles\FavoritesController@remove
+  GET|HEAD  api/documentation ............................................................. l5-swagger.default.api › L5Swagger\Http › SwaggerController@api
+  GET|HEAD  api/oauth2-callback .................................... l5-swagger.default.oauth2_callback › L5Swagger\Http › SwaggerController@oauth2Callback
+  GET|HEAD  api/profiles/{username} ......................................................................... api.profiles.get › Api\ProfileController@show
+  POST      api/profiles/{username}/follow ............................................................. api.profiles.follow › Api\ProfileController@follow
+  DELETE    api/profiles/{username}/follow ......................................................... api.profiles.unfollow › Api\ProfileController@unfollow
+  GET|HEAD  api/tags .............................................................................................. api.tags.list › Api\TagsController@list
+  GET|HEAD  api/user .......................................................................................... api.users.current › Api\UserController@show
+  PUT       api/user ......................................................................................... api.users.update › Api\UserController@update
+  POST      api/users .................................................................................... api.users.register › Api\AuthController@register
+  POST      api/users/login .................................................................................... api.users.login › Api\AuthController@login
+  GET|HEAD  docs/asset/{asset} ................................................... l5-swagger.default.asset › L5Swagger\Http › SwaggerAssetController@index
+  GET|HEAD  docs/{jsonFile?} ............................................................ l5-swagger.default.docs › L5Swagger\Http › SwaggerController@docs
+  GET|HEAD  sanctum/csrf-cookie ............................................................................... Laravel\Sanctum › CsrfCookieController@show
+```
+
+I tested each endpoint using Postman
+
 Now you should be able to view the default laravel page
 ### Rendered Page
-![rendered-page-laravel]()
+![rendered-page-laravel](/semester_project/img/web.png)

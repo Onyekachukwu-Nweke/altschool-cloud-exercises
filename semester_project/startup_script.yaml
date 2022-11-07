@@ -93,6 +93,7 @@
 
     - include_vars: var/db_config.yaml
     - name: Creating remote Root user
+      ignore_errors: true
       mysql_user:
         login_user: root
         login_password: "sheyudeywhineme"
@@ -104,9 +105,10 @@
         state: present
 
     - include_vars: var/db_config.yaml
+      ignore_errors: true
     - name: Creating MySql database
       mysql_db:
-        login_user: root
+        login_user: "{{ db_user }}"
         login_password: "{{ db_pass }}"
         name: "{{ db_name }}"
         state: present
