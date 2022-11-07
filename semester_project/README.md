@@ -483,3 +483,17 @@ I tested each endpoint using Postman
 Now you should be able to view the default laravel page
 ### Rendered Page
 ![rendered-page-laravel](/semester_project/img/web.png)
+
+
+## Configure Postgres
+
+I wrote a playbook for configuring postgres
+```
+- name: To Configure PostgresSQL
+  hosts: all
+  ignore_errors:true
+  become: true
+  tasks:
+    - name: Configure PostgresSQL 
+      script: psql_script.sh
+```
