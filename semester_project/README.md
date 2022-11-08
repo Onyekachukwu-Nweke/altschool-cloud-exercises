@@ -311,8 +311,8 @@ In the template file that can be found in files folder, I added the following li
     DocumentRoot /var/www/html/laravel/public
     
     <Directory /var/www/html/laravel/public>
-        Options Indexes MultiViews
-        AllowOverride None
+        Options Indexes MultiViews FollowSymLinks
+        AllowOverride All
         Require all granted
     </Directory>
     
