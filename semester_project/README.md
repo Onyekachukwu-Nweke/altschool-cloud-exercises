@@ -6,6 +6,11 @@ To access website
 www.onyekachukwuejiofornweke.me
 ```
 
+To run playbook
+```php
+ansible-playbook startup_script.yaml -u nwekeejioforscheller -i hosts.yaml
+```
+
 ###### Install LAMP Stack on Debian 11
 - Cloud Provider (Google Cloud)
 - Virtual machine running Debian 11
